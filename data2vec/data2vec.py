@@ -51,18 +51,28 @@ class Data2Vec(nn.Module):
         """
         One EMA step for the offline model until the ending decay value is reached
         """
+        # 減衰が最終状態に達していない場合
         if self.ema_decay != self.ema_end_decay:
+            # 更新回数が終了回数を超えた場合
             if self.ema.num_updates >= self.ema_anneal_end_step:
+                # 減衰を最終段階に変更する
                 decay = self.ema_end_decay
+            # 更新回数が終了回数を超えていない場合
             else:
+                # アニーリングレートを更新
                 decay = self.ema.get_annealed_rate(
                     self.ema_decay,
                     self.ema_end_decay,
                     self.ema.num_updates,
                     self.ema_anneal_end_step,
                 )
+            # クラス変数を更新
             self.ema.decay = decay
+        
+        # 減衰地が1より小さい場合
         if self.ema.decay < 1:
+            # 移動平均ステップを計算
+            # 教師モデルの更新?
             self.ema.step(self.encoder)
 
     def forward(self, src, trg=None, mask=None, **kwargs):

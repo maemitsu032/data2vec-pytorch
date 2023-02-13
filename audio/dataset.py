@@ -50,6 +50,8 @@ class DataCollatorForWav2Vec2Pretraining:  # copied from transformers/examples/p
 
     def __call__(self, features):
         # reformat list to dict and set to pytorch format
+
+        # データのパディングを行う
         batch = self.feature_extractor.pad(
             features,
             padding=self.padding,
